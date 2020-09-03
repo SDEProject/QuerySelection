@@ -5,7 +5,7 @@ from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions, routers
 
-from utility import views
+from query_selection_service import views
 from travelando import settings
 
 router = routers.SimpleRouter()
