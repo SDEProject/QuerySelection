@@ -15,7 +15,7 @@ class QuerySelectionView(View):
     def get(self, request):
         parameters = request.GET
         query = ''
-        returned_params = []
+        # returned_params = []
 
         subject = parameters.get('subject', None)
         stop = parameters.get('stop', None)
@@ -25,7 +25,7 @@ class QuerySelectionView(View):
         information = parameters.get('information', None)
         info_equipment = parameters.get('info_equipment', None)
         path_difficulty = parameters.get('path_difficulty', None)
-        regione = parameters.get('regione', None)
+        regione = parameters.get('region', None)
         time_period = parameters.get('time_period', None)
 
         print(parameters)
@@ -35,32 +35,59 @@ class QuerySelectionView(View):
         elif subject == 'hotel' and checkin is not None:
             if comune is not None and comune != '':
                 query = '3'
-                returned_params = ['name', 'starthour', 'endhour', 'stars', 'street']
+                # returned_params = ['name', 'starthour', 'endhour', 'stars', 'street']
+                required_params = ['comune', 'checkin']
             else:
                 query = '6'
-                returned_params = ['name', 'starthour', 'endhour', 'stars', 'street', 'city']
+                # returned_params = ['name', 'starthour', 'endhour', 'stars', 'street', 'city']
         elif subject == 'Shop' and shop_enum is not None:
-            if regione is not None:
+            if regione is not None and regione != '':
                 query = '4'
             elif 'position' in information:
                 query = '7'
             else:
                 query = '5'
-        elif subject == 'Activity path' and path_difficulty is not None:
-            if time_period is not None:
-                query = '8'
-            elif info_equipment is not None:
-                query = '9'
-            elif path_difficulty == 'smooth':
-                query = '12'
-            elif regione is not None:
-                query = '14'
-            else:
-                query = '15'
+        elif subject == 'ActivityPath':
+            if path_difficulty is not None:
+                if time_period is not None and time_period != '':
+                    query = '8'
+                elif info_equipment is not None and info_equipment != '':
+                    query = '9'
+                elif path_difficulty == 'smooth':
+                    query = '12'
+                else:
+                    query = '14'
+
+        print(query)
+        response = {
+            "query": query
+        }
+        return JsonResponse(response)
+
+
+class TemplateSelectionView(View):
+    def get(self, request):
+        query = parameters.get('query', None)
+
+        template = 'Sorry something went wrong'
+
+        if query == '3':
+            template = 'The hotel {name} starts checkin at {starthour} and ends at {endhour}.'
+        elif query == '2':
+            template = 'At the stop {name}, you can find the following mean of transport: {transports}.'
+        elif query == '6':
+            template = 'The hotel {name} in {city} starts checkin at {starthour} and ends at {endhour}.'
+        elif query == '4':
+            template = 'The {shop_enum} in {city} are: {shops}.'
+        elif query == '5':
+            template = 'The {shop_enum} in {city} ({region}) are: {shops}.'
+        elif query == '7':
+            template = 'The {shop_enum} {name} is in {address}, {city} ({region}).'
+        elif query == '8':
+            template = 'The {difficulty} difficulty activity path with duration {time} are: {paths}.'
 
         response = {
-            "query": query,
-            "returned_params": returned_params
+            "template": template
         }
         return JsonResponse(response)
 
