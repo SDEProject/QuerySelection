@@ -18,7 +18,6 @@ class QuerySelectionView(View):
         # returned_params = []
 
         subject = parameters.get('subject', None)
-        stop = parameters.get('stop', None)
         comune = parameters.get('comune', None)
         checkin = parameters.get('checkin', None)
         shop_enum = parameters.get('shop_enum', None)
@@ -27,36 +26,52 @@ class QuerySelectionView(View):
         path_difficulty = parameters.get('path_difficulty', None)
         regione = parameters.get('region', None)
         time_period = parameters.get('time_period', None)
+        poi_activity_from = parameters.get('poi_activity_from', None)
+        poi_activity_to = parameters.get('poi_activity_to', None)
+        path_number = parameters.get('path_number', None)
 
         print(parameters)
 
-        if subject == 'mean of transport' and stop is not None and comune is not None:
-            query = '2'
-        elif subject == 'hotel' and checkin is not None:
-            if comune is not None and comune != '':
-                query = '3'
-                # returned_params = ['name', 'starthour', 'endhour', 'stars', 'street']
-                required_params = ['comune', 'checkin']
+        if subject == 'Hotel':
+            if checkin is not None and checkin != '':
+                if comune is not None and comune != '':
+                    query = '3'
+                else:
+                    query = '6'
+            elif comune is not None and comune != '':
+                query = '25'
             else:
-                query = '6'
-                # returned_params = ['name', 'starthour', 'endhour', 'stars', 'street', 'city']
-        elif subject == 'Shop' and shop_enum is not None:
+                query = '26'
+        elif subject == 'Shop' and shop_enum is not None and shop_enum != '':
             if regione is not None and regione != '':
                 query = '4'
+            elif comune is not None and comune != '':
+                query = '28'
             elif 'position' in information:
                 query = '7'
             else:
                 query = '5'
         elif subject == 'ActivityPath':
-            if path_difficulty is not None:
+            if path_difficulty is not None and len(path_difficulty) > 0:
                 if time_period is not None and time_period != '':
                     query = '8'
                 elif info_equipment is not None and info_equipment != '':
                     query = '9'
-                elif path_difficulty == 'smooth':
+                elif path_difficulty[0] == 'smooth':
                     query = '12'
+                elif len(info_equipment) == 2:
+                    query = '13'
                 else:
                     query = '14'
+            elif info_equipment is not None and info_equipment != '':
+                query = '27'
+            elif poi_activity_from is not None and poi_activity_from != '':
+                if poi_activity_to is not None and poi_activity_to != '':
+                    query = '18'
+                else:
+                    query = '17'
+            elif path_number is not None and path_number != '':
+                query = '19'
 
         print(query)
         response = {
@@ -65,29 +80,4 @@ class QuerySelectionView(View):
         return JsonResponse(response)
 
 
-class TemplateSelectionView(View):
-    def get(self, request):
-        query = parameters.get('query', None)
-
-        template = 'Sorry something went wrong'
-
-        if query == '3':
-            template = 'The hotel {name} starts checkin at {starthour} and ends at {endhour}.'
-        elif query == '2':
-            template = 'At the stop {name}, you can find the following mean of transport: {transports}.'
-        elif query == '6':
-            template = 'The hotel {name} in {city} starts checkin at {starthour} and ends at {endhour}.'
-        elif query == '4':
-            template = 'The {shop_enum} in {city} are: {shops}.'
-        elif query == '5':
-            template = 'The {shop_enum} in {city} ({region}) are: {shops}.'
-        elif query == '7':
-            template = 'The {shop_enum} {name} is in {address}, {city} ({region}).'
-        elif query == '8':
-            template = 'The {difficulty} difficulty activity path with duration {time} are: {paths}.'
-
-        response = {
-            "template": template
-        }
-        return JsonResponse(response)
 

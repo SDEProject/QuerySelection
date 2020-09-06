@@ -13,5 +13,4 @@ router = routers.SimpleRouter()
 urlpatterns = [
     path('', include(router.urls)),
     path(r'query_selection/', views.QuerySelectionView.as_view(), name='searches_process'),
-    path(r'templates/', views.TemplateSelectionView.as_view(), name='searches_process'),
 ]
