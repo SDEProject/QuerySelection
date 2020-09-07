@@ -47,7 +47,7 @@ class QuerySelectionView(View):
                 query = '4'
             elif comune is not None and comune != '':
                 query = '28'
-            elif 'position' == information:
+            elif information == 'position':
                 query = '7'
             else:
                 query = '5'
