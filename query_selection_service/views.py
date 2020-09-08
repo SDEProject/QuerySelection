@@ -15,7 +15,6 @@ class QuerySelectionView(View):
     def get(self, request):
         parameters = request.GET
         query = ''
-        # returned_params = []
 
         subject = parameters.get('subject', None)
         comune = parameters.get('comune', None)
@@ -29,6 +28,8 @@ class QuerySelectionView(View):
         poi_activity_from = parameters.get('poi_activity_from', None)
         poi_activity_to = parameters.get('poi_activity_to', None)
         path_number = parameters.get('path_number', None)
+
+        status_code = 200
 
         print(parameters)
 
@@ -72,12 +73,14 @@ class QuerySelectionView(View):
                     query = '17'
             elif path_number is not None and path_number != '':
                 query = '19'
+        else:
+            status_code = 400
 
         print(query)
         response = {
             "query": query
         }
-        return JsonResponse(response)
+        return JsonResponse(response, status=status_code)
 
 
 
