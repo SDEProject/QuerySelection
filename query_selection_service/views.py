@@ -10,6 +10,9 @@ from travelando import settings
 import json
 
 
+OTHER_SUBJECTS = ['Restaurant', 'Attraction', 'EmergencyService']
+
+
 # Create your views here.
 class QuerySelectionView(View):
     def get(self, request):
@@ -41,13 +44,15 @@ class QuerySelectionView(View):
                     query = '6'
             elif comune is not None and comune != '':
                 query = '25'
-            else:
+            elif regione is not None and regione != '':
                 query = '26'
+            else:
+                query = '29'
         elif subject == 'Shop' and shop_enum is not None and shop_enum != '':
-            if regione is not None and regione != '':
-                query = '4'
-            elif comune is not None and comune != '':
+            if comune is not None and comune != '':
                 query = '28'
+            elif regione is not None and regione != '':
+                query = '4'
             elif information == 'position':
                 query = '7'
             else:
@@ -60,8 +65,6 @@ class QuerySelectionView(View):
                     query = '9'
                 elif path_difficulty[0] == 'smooth':
                     query = '12'
-                elif len(info_equipment) == 2:
-                    query = '13'
                 else:
                     query = '14'
             elif info_equipment is not None and info_equipment != '':
@@ -73,8 +76,19 @@ class QuerySelectionView(View):
                     query = '17'
             elif path_number is not None and path_number != '':
                 query = '19'
+            else:
+                status_code = 400
+                return JsonResponse({"text": "Query selection failed"}, status=status_code)
+        elif subject is not None and subject in OTHER_SUBJECTS:
+            if comune is not None and comune != '':
+                query = '30'
+            elif regione is not None and regione != '':
+                query = '31'
+            else:
+                query = '32'
         else:
             status_code = 400
+            return JsonResponse({"text": "Query selection failed"}, status=status_code)
 
         print(query)
         response = {
