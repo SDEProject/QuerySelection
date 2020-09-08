@@ -59,11 +59,9 @@ class QuerySelectionView(View):
                 query = '5'
         elif subject == 'ActivityPath':
             if path_difficulty is not None and len(path_difficulty) > 0:
-                if time_period is not None and time_period != '':
-                    query = '8'
-                elif info_equipment is not None and info_equipment != '':
+                if info_equipment is not None and info_equipment != '':
                     query = '9'
-                elif path_difficulty[0] == 'smooth':
+                elif path_difficulty == 'smooth':
                     query = '12'
                 else:
                     query = '14'
